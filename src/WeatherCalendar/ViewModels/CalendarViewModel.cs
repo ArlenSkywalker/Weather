@@ -114,21 +114,6 @@ public class CalendarViewModel : CalendarBaseViewModel, IActivatableViewModel
         }
     }
 
-    private static DateTime GetFirstDayOfWeek(DateTime dateTime)
-    {
-        return dateTime.DayOfWeek switch
-        {
-            DayOfWeek.Sunday => dateTime.AddDays(-6),
-            DayOfWeek.Monday => dateTime,
-            DayOfWeek.Tuesday => dateTime.AddDays(-1),
-            DayOfWeek.Wednesday => dateTime.AddDays(-2),
-            DayOfWeek.Thursday => dateTime.AddDays(-3),
-            DayOfWeek.Friday => dateTime.AddDays(-4),
-            DayOfWeek.Saturday => dateTime.AddDays(-5),
-            _ => dateTime
-        };
-    }
-
     /// <summary>
     /// 更新日历日期
     /// </summary>
@@ -136,7 +121,7 @@ public class CalendarViewModel : CalendarBaseViewModel, IActivatableViewModel
     private void UpdateDate(DateTime date)
     {
         var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
-        var startDateOfPage = GetFirstDayOfWeek(firstDayOfMonth);
+        var startDateOfPage = firstDayOfMonth.AddDays(1 - (int)firstDayOfMonth.DayOfWeek);
 
         var daysOfMonth = (int)(firstDayOfMonth.AddMonths(1) - firstDayOfMonth).TotalDays;
         var endDayOfMonth = firstDayOfMonth.AddDays(daysOfMonth - 1);
