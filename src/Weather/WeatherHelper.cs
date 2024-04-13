@@ -1,0 +1,136 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using RestSharp;
+using RestSharp.Serializers.NewtonsoftJson;
+
+namespace Weather;
+
+/// <summary>
+///     查询类型
+/// </summary>
+public enum SearchType
+{
+    /// <summary>
+    ///     城市名称
+    /// </summary>
+    CityName,
+
+    /// <summary>
+    ///     城市代码
+    /// </summary>
+    CityKey
+}
+
+public class CityKeyInfo
+{
+    /// <summary>
+    ///     城市
+    /// </summary>
+    public string City { get; set; }
+
+    /// <summary>
+    ///     地区
+    /// </summary>
+    public string District { get; set; }
+
+    /// <summary>
+    ///     省
+    /// </summary>
+    public string Province { get; set; }
+
+    /// <summary>
+    ///     城市代码
+    /// </summary>
+    public string CityKey { get; set; }
+
+    public CityKeyInfo(string info)
+    {
+        var infos = info.Trim().Split(',');
+
+        if (infos.Length != 4)
+            return;
+
+        CityKey = infos[0];
+        City = infos[1];
+        District = infos[2];
+        Province = infos[3];
+    }
+
+    public override string ToString()
+    {
+        return $"{City},{District},{Province}({CityKey})";
+    }
+}
+
+/// <summary>
+///     天气辅助类
+/// </summary>
+public class WeatherHelper
+{
+    private static WeatherHelper _instance;
+
+    public List<CityKeyInfo> CityKeyInfos = new();
+
+    /// <summary>
+    ///     天气辅助类实例
+    /// </summary>
+    public static WeatherHelper Instance => _instance ??= new WeatherHelper();
+
+    /// <summary>
+    /// </summary>
+    public WeatherForecast WeatherForecast { get; private set; }
+
+    private WeatherHelper()
+    {
+        using var sr = new StringReader(Resource.CityKeys);
+        while (sr.ReadLine() is { } line)
+            if (!string.IsNullOrEmpty(line))
+            {
+                var cityKey = new CityKeyInfo(line);
+                if (!string.IsNullOrEmpty(cityKey.CityKey) && !string.IsNullOrEmpty(cityKey.City))
+                    CityKeyInfos.Add(cityKey);
+            }
+    }
+
+    /// <summary>
+    ///     天气更新事件
+    /// </summary>
+    public event Action WeatherInfoUpdated;
+
+    /// <summary>
+    ///     更新天气信息
+    /// </summary>
+    /// <param name="city">城市代码</param>
+    /// <returns></returns>
+    public WeatherForecast UpdateWeather(CityKeyInfo city)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(city?.CityKey))
+                return null;
+
+            var client = new RestClient("http://zhwnlapi.etouch.cn",
+                configureSerialization: cfg => cfg.UseNewtonsoftJson());
+
+            var request = new RestRequest("Ecalender/api/v2/weather");
+            request.AddParameter("app_key", "99817882");
+            request.AddParameter("citykey", city.CityKey);
+
+            var forecast = client.Get<WeatherForecast>(request);
+
+            if (forecast is not { IsValid: true })
+                return null;
+
+            WeatherForecast = forecast;
+
+            WeatherInfoUpdated?.Invoke();
+
+            return WeatherForecast;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+}

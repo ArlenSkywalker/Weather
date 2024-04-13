@@ -1,0 +1,119 @@
+﻿<rxui:ReactiveWindow
+    x:Class="WeatherCalendar.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:rxui="http://reactiveui.net"
+    xmlns:tb="http://www.hardcodet.net/taskbar"
+    xmlns:vms="clr-namespace:WeatherCalendar.ViewModels"
+    Title="天气日历"
+    x:TypeArguments="vms:MainWindowViewModel"
+    AllowsTransparency="True"
+    Background="Transparent"
+    ShowInTaskbar="False"
+    SizeToContent="WidthAndHeight"
+    WindowStartupLocation="Manual"
+    WindowStyle="None"
+    mc:Ignorable="d">
+    <Grid x:Name="MainGrid" Background="#01000000">
+        <tb:TaskbarIcon x:Name="NotifyIcon" IconSource="../Icon.ico">
+            <tb:TaskbarIcon.TrayToolTip>
+                <Border
+                    Background="White"
+                    BorderBrush="#555555"
+                    BorderThickness="1"
+                    CornerRadius="2">
+                    <TextBlock
+                        Margin="5,2"
+                        FontFamily="微软雅黑"
+                        Foreground="#555555"
+                        Text="天气日历" />
+                </Border>
+            </tb:TaskbarIcon.TrayToolTip>
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu FontFamily="微软雅黑">
+                    <MenuItem
+                        x:Name="CalendarDetailMenuItem"
+                        FontWeight="Bold"
+                        Header="日历详情"
+                        Icon="{materialDesign:PackIcon Kind=CalendarMonth}" />
+                    <Separator />
+                    <MenuItem
+                        x:Name="MousePenetrationMenuItem"
+                        Header="鼠标穿透"
+                        IsCheckable="True" />
+                    <MenuItem
+                        x:Name="LockedPositionMenuItem"
+                        Header="锁定位置"
+                        IsCheckable="True" />
+                    <MenuItem
+                        x:Name="BackgroundTransparentMenuItem"
+                        Header="背景透明"
+                        IsCheckable="True" />
+                    <MenuItem
+                        x:Name="TopmostMenuItem"
+                        Header="置顶"
+                        IsCheckable="True" />
+                    <MenuItem x:Name="AutoStartMenuItem" IsCheckable="True">
+                        <MenuItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="开机启动" />
+                                <materialDesign:PackIcon
+                                    x:Name="AutoStartPackIcon"
+                                    Margin="5,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Kind="ShieldOutline" />
+                            </StackPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem
+                        x:Name="UpdateWeatherMenuItem"
+                        Header="更新天气"
+                        Icon="{materialDesign:PackIcon Kind=CloudRefresh}" />
+                    <Separator />
+                    <MenuItem
+                        x:Name="CurrentMonthMenuItem"
+                        Header="本月"
+                        Icon="{materialDesign:PackIcon Kind=CalendarToday}" />
+                    <MenuItem
+                        x:Name="LastMonthMenuItem"
+                        Header="上个月"
+                        Icon="{materialDesign:PackIcon Kind=CalendarArrowLeft}" />
+                    <MenuItem
+                        x:Name="NextMonthMenuItem"
+                        Header="下个月"
+                        Icon="{materialDesign:PackIcon Kind=CalendarArrowRight}" />
+                    <Separator />
+                    <MenuItem
+                        x:Name="ThemeMenuItem"
+                        Header="主题"
+                        Icon="{materialDesign:PackIcon Kind=Palette}">
+                        <MenuItem
+                            x:Name="DefaultThemeMenuItem"
+                            Header="默认"
+                            IsCheckable="True"
+                            IsChecked="True"
+                            IsEnabled="False" />
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem
+                        x:Name="SettingsMenuItem"
+                        Header="设置"
+                        Icon="{materialDesign:PackIcon Kind=Cog}" />
+                    <Separator />
+                    <MenuItem
+                        x:Name="QuitMenuItem"
+                        Header="退出"
+                        Icon="{materialDesign:PackIcon Kind=ExitToApp}" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
+        <rxui:ViewModelViewHost
+            x:Name="ViewModelViewHost"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch" />
+    </Grid>
+</rxui:ReactiveWindow>
